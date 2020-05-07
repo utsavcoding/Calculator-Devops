@@ -1,5 +1,68 @@
 <html>
+<head>
+<meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta http-equiv="x-ua-compatible" content="ie=edge">
+    <title>Calculator</title>
+    <!-- <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.7.0/css/all.css"> -->
+    <link rel="stylesheet" type="text/css" href="bootstrap/css/bootstrap.min.css">
+    <link rel="stylesheet" href="css/mdb.min.css">
+    <link rel="stylesheet" href="css/style.css">
+	<script type="text/javascript" src="./js/jquery-3.5.1.min.js"></script>
+	<script type="text/javascript" src="js/popper.min.js"></script>
+    <script type="text/javascript" src="bootstrap/js/bootstrap.min.js"></script>
+    <script type="text/javascript" src="js/mdb.min.js"></script>	
+</head>
+
 <body>
-<h2>Hello World!</h2>
+	<form name="calculator">
+    <div class="calculator card" >
+		
+      <input type="text" class="calculator-screen z-depth-1" name="display"/>
+
+      <div class="calculator-keys">
+
+        <button type="button"  class="operator btn btn-info" onclick="calculator.display.value += '+'">+</button>
+        <button type="button"  class="operator btn btn-info" onclick="calculator.display.value += '-'">-</button>
+        <button type="button"  class="operator btn btn-info" onclick="calculator.display.value += '*'">*</button>
+        <button type="button"  class="operator btn btn-info" onclick="calculator.display.value += '/'">/</button>
+
+        <button type="button"  class="btn btn-light waves-effect" onclick="calculator.display.value += '7'">7</button>
+        <button type="button"  class="btn btn-light waves-effect" onclick="calculator.display.value += '8'">8</button>
+        <button type="button"  class="btn btn-light waves-effect" onclick="calculator.display.value += '9'">9</button>
+        
+        <button type="button"  class="btn btn-light waves-effect" onclick="calculator.display.value += '4'">4</button>
+        <button type="button"  class="btn btn-light waves-effect" onclick="calculator.display.value += '5'">5</button>
+        <button type="button"  class="btn btn-light waves-effect" onclick="calculator.display.value += '6'">6</button>
+        
+        <button type="button"  class="btn btn-light waves-effect" onclick="calculator.display.value += '1'">1</button>
+        <button type="button"  class="btn btn-light waves-effect" onclick="calculator.display.value += '2'">2</button>
+        <button type="button"  class="btn btn-light waves-effect" onclick="calculator.display.value += '3'">3</button>
+        
+        <button type="button"  class="btn btn-light waves-effect" onclick="calculator.display.value += '0'">0</button>
+        <button type="button"  class="btn btn-light waves-effect" onclick="calculator.display.value += '.'">.</button>
+        <button type="button" class="all-clear function btn btn-danger btn-sm" onclick="calculator.display.value =''">AC</button>
+
+        <button type="button" class="equal-sign operator btn btn-default" onclick="calculate(calculator.display.value)">=</button>
+
+      </div>
+    </div>
+
+    
+   </form> 
 </body>
+<script type="text/javascript">
+			$(document).ready(function() {
+				$(" input[name=display]").val("");
+			});
+			
+			function calculate(expression){
+				var url=window.location.href+"webapi/calculator/evaluate";
+				$.post(url, JSON.stringify(expression),function(result,status){
+					if(status=="success"){
+						$(" input[name=display]").val(result);	
+					}
+				  });	
+			}
+	</script>
 </html>

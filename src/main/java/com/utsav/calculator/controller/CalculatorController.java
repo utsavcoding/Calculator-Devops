@@ -1,6 +1,6 @@
 package com.utsav.calculator.controller;
 
-import java.util.Map;
+import java.text.DecimalFormat;
 
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
@@ -10,29 +10,23 @@ import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
-import com.google.gson.Gson;
-import com.google.gson.JsonObject;
-
 @Path("/calculator")
 public class CalculatorController {
 	
 	@POST
     @Path("/evaluate")
-    @Consumes(MediaType.APPLICATION_JSON)
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces(MediaType.APPLICATION_JSON)
-    public String calculate(String s) throws Exception {
-		Gson gson=new Gson();
-		Map<String, Object> map = gson.fromJson(s, Map.class); // parse
-	    JsonObject jsonTree = (JsonObject) gson.toJsonTree(map);
-	    String data = jsonTree.get("data").toString();
+    public String calculate(String data) throws Exception {
+		data=data.substring(1,data.length()-1);
 	    ScriptEngineManager mgr = new ScriptEngineManager();
 	    ScriptEngine engine = mgr.getEngineByName("JavaScript");
-	    String result=(String) engine.eval(data);
+	    String result=String.valueOf(engine.eval(data));
+	    if(result.contains(".")) {
+	    	DecimalFormat df = new DecimalFormat("#.#####");
+	    	result=df.format(Double.parseDouble(result));
+	    }
     	return result;
     }
 
 }
-
-//JSONObject jObj =(JSONObject)new JSONParser().parse(s);
-//CalculatorResponse c=new CalculatorResponse(jObj.get("data").toString());
-//String m=c.evaluate();
