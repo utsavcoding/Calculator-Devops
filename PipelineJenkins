@@ -1,0 +1,62 @@
+pipeline {
+  environment {
+    registry = "utsavcoding/calculator-docker"
+    registryCredential = 'docker-hub-credentials'
+    dockerImage = ''
+    dockerImageLatest = ''
+  }
+  agent any
+  stages {
+    stage('Cloning Git') {
+      steps {
+        git 'https://github.com/utsavcoding/Calculator-Devops.git'
+      }
+    }
+    stage('Build'){
+        steps {
+             sh 'mvn clean install'
+        }
+    }
+    stage('Test'){
+        steps {
+             sh 'mvn test'
+        }
+    }
+    stage('Building image') {
+      steps{
+        script {
+          dockerImage = docker.build registry + ":$BUILD_NUMBER"
+          dockerImageLatest = docker.build registry + ":latest"
+        }
+      }
+    }
+    stage('Deploy Image') {
+      steps{
+        script {
+          docker.withRegistry( '', registryCredential ) {
+            dockerImage.push()
+            dockerImageLatest.push()
+          }
+        }
+      }
+    }
+    stage('Remove Unused docker image') {
+      steps{
+        sh "docker rmi $registry:$BUILD_NUMBER"
+      }
+    }
+    stage('Execute Rundeck job') {
+        steps {
+          script {
+            step([$class: "RundeckNotifier",
+                  includeRundeckLogs: true,
+                  jobId: "55deb57e-6b86-4068-9f3e-162252251e12",
+                  rundeckInstance: "calcrundeck",
+                  shouldFailTheBuild: true,
+                  shouldWaitForRundeckJob: true,
+                  tailLog: true])
+          }
+        }
+    }
+  }
+}
